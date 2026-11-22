@@ -168,7 +168,6 @@ import com.decibel.music.ui.icon.Tune
 import com.decibel.music.ui.icon.Update
 import com.decibel.music.ui.navigation.destination.list.AlbumDestination
 import com.decibel.music.ui.navigation.destination.list.ArtistDestination
-import com.decibel.music.ui.theme.seed
 import com.decibel.music.ui.theme.typo
 import com.decibel.music.viewModel.NowPlayingBottomSheetUIEvent
 import com.decibel.music.viewModel.NowPlayingBottomSheetViewModel
@@ -1855,8 +1854,8 @@ fun NowPlayingBottomSheet(
                                                 stringResource(Res.string.sleep_timer, sleepTimerState.timeRemaining.toString())
                                             },
                                         text = null,
-                                        textColor = seed,
-                                        iconColor = seed,
+                                        textColor = MaterialTheme.colorScheme.primary,
+                                        iconColor = MaterialTheme.colorScheme.primary,
                                     ) {
                                         sleepTimerWarning = true
                                     }
@@ -2262,7 +2261,7 @@ fun SleepTimerBottomSheet(
                     Image(
                         imageVector = DecibelIcons.AccessAlarm,
                         contentDescription = null,
-                        colorFilter = ColorFilter.tint(seed),
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
                         modifier = Modifier.size(20.dp),
                     )
                     Spacer(modifier = Modifier.width(8.dp))
@@ -2294,19 +2293,19 @@ fun SleepTimerBottomSheet(
                                 shape = RoundedCornerShape(12.dp),
                                 colors =
                                     ButtonDefaults.outlinedButtonColors(
-                                        containerColor = if (isSelected) seed.copy(alpha = 0.15f) else Color.Transparent,
+                                        containerColor = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f) else Color.Transparent,
                                     ),
                                 border =
                                     BorderStroke(
                                         width = if (isSelected) 1.5.dp else 1.dp,
-                                        color = if (isSelected) seed else rememberSurfaceDarkColors().disabled,
+                                        color = if (isSelected) MaterialTheme.colorScheme.primary else rememberSurfaceDarkColors().disabled,
                                     ),
                                 contentPadding = PaddingValues(vertical = 10.dp, horizontal = 4.dp),
                             ) {
                                 Text(
                                     text = preset.label,
                                     style = typo().bodySmall,
-                                    color = if (isSelected) seed else rememberSurfaceDarkColors().subtitle,
+                                    color = if (isSelected) MaterialTheme.colorScheme.primary else rememberSurfaceDarkColors().subtitle,
                                     fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
                                 )
                             }
@@ -2332,19 +2331,19 @@ fun SleepTimerBottomSheet(
                         shape = RoundedCornerShape(12.dp),
                         colors =
                             ButtonDefaults.outlinedButtonColors(
-                                containerColor = if (isEndSelected) seed.copy(alpha = 0.15f) else Color.Transparent,
+                                containerColor = if (isEndSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f) else Color.Transparent,
                             ),
                         border =
                             BorderStroke(
                                 width = if (isEndSelected) 1.5.dp else 1.dp,
-                                color = if (isEndSelected) seed else rememberSurfaceDarkColors().disabled,
+                                color = if (isEndSelected) MaterialTheme.colorScheme.primary else rememberSurfaceDarkColors().disabled,
                             ),
                         contentPadding = PaddingValues(vertical = 10.dp, horizontal = 4.dp),
                     ) {
                         Text(
                             text = "End of song",
                             style = typo().bodySmall,
-                            color = if (isEndSelected) seed else rememberSurfaceDarkColors().subtitle,
+                            color = if (isEndSelected) MaterialTheme.colorScheme.primary else rememberSurfaceDarkColors().subtitle,
                             fontWeight = if (isEndSelected) FontWeight.SemiBold else FontWeight.Normal,
                         )
                     }
@@ -2360,19 +2359,19 @@ fun SleepTimerBottomSheet(
                         shape = RoundedCornerShape(12.dp),
                         colors =
                             ButtonDefaults.outlinedButtonColors(
-                                containerColor = if (isCustomSelected) seed.copy(alpha = 0.15f) else Color.Transparent,
+                                containerColor = if (isCustomSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f) else Color.Transparent,
                             ),
                         border =
                             BorderStroke(
                                 width = if (isCustomSelected) 1.5.dp else 1.dp,
-                                color = if (isCustomSelected) seed else rememberSurfaceDarkColors().disabled,
+                                color = if (isCustomSelected) MaterialTheme.colorScheme.primary else rememberSurfaceDarkColors().disabled,
                             ),
                         contentPadding = PaddingValues(vertical = 10.dp, horizontal = 4.dp),
                     ) {
                         Text(
                             text = "Custom",
                             style = typo().bodySmall,
-                            color = if (isCustomSelected) seed else rememberSurfaceDarkColors().subtitle,
+                            color = if (isCustomSelected) MaterialTheme.colorScheme.primary else rememberSurfaceDarkColors().subtitle,
                             fontWeight = if (isCustomSelected) FontWeight.SemiBold else FontWeight.Normal,
                         )
                     }
@@ -2457,8 +2456,8 @@ fun SleepTimerBottomSheet(
                     shape = RoundedCornerShape(12.dp),
                     colors =
                         ButtonDefaults.buttonColors(
-                            containerColor = seed,
-                            disabledContainerColor = seed.copy(alpha = 0.3f),
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
                         ),
                     enabled = isSetEnabled,
                 ) {
@@ -3110,14 +3109,14 @@ fun SortPlaylistBottomSheet(
                                 text = stringResource(filterOption.displayNameRes()),
                                 style = typo().labelMedium,
                                 fontWeight = FontWeight.Medium,
-                                color = if (isSelected) seed else rememberSurfaceDarkColors().content,
+                                color = if (isSelected) MaterialTheme.colorScheme.primary else rememberSurfaceDarkColors().content,
                             )
                             Spacer(modifier = Modifier.weight(1f))
                             if (isSelected) {
                                 Image(
                                     imageVector = DecibelIcons.Done,
                                     contentDescription = "Selected",
-                                    colorFilter = ColorFilter.tint(seed),
+                                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
                                     modifier = Modifier.size(32.dp),
                                 )
                             } else {
