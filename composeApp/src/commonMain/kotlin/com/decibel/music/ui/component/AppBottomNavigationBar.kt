@@ -21,7 +21,6 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.decibel.music.extension.artworkScrimBrush
-import com.decibel.music.extension.greyScale
 import com.decibel.music.ui.navigation.destination.home.HomeDestination
 import com.decibel.music.ui.navigation.destination.library.LibraryDestination
 import com.decibel.music.ui.navigation.destination.search.SearchDestination
@@ -65,6 +64,8 @@ fun AppBottomNavigationBar(
         if (routeSelectedIndex != null) lastSelectedIndex = routeSelectedIndex
     }
     val selectedIndex = routeSelectedIndex ?: lastSelectedIndex
+    val activeTint = MaterialTheme.colorScheme.primary
+    val inactiveTint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.64f)
 
     Box(
         modifier =
@@ -116,21 +117,19 @@ fun AppBottomNavigationBar(
                         Text(
                             stringResource(screen.title),
                             style =
-                                if (isSelected) {
-                                    typo().bodySmall
-                                } else {
-                                    typo().bodySmall.greyScale()
-                                },
+                                typo().bodySmall.copy(
+                                    color = if (isSelected) activeTint else inactiveTint,
+                                ),
                         )
                     },
                     icon = screen.icon,
                     colors =
                         NavigationBarItemDefaults.colors(
-                            indicatorColor = Color(0xFF1E1E1E),
-                            selectedIconColor = Color.White,
-                            unselectedIconColor = Color(0x8AFFFFFF),
-                            selectedTextColor = Color.White,
-                            unselectedTextColor = Color(0x8AFFFFFF),
+                            indicatorColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                            selectedIconColor = activeTint,
+                            unselectedIconColor = inactiveTint,
+                            selectedTextColor = activeTint,
+                            unselectedTextColor = inactiveTint,
                         ),
                     modifier =
                         Modifier.windowInsetsPadding(
@@ -175,6 +174,8 @@ fun AppNavigationRail(
         if (routeSelectedIndex != null) lastSelectedIndex = routeSelectedIndex
     }
     val selectedIndex = routeSelectedIndex ?: lastSelectedIndex
+    val activeTint = MaterialTheme.colorScheme.primary
+    val inactiveTint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.64f)
     NavigationRail {
         Spacer(Modifier.height(16.dp))
         Box(Modifier.padding(horizontal = 16.dp)) {
@@ -211,11 +212,9 @@ fun AppNavigationRail(
                     Text(
                         stringResource(screen.title),
                         style =
-                            if (isSelected) {
-                                typo().bodySmall
-                            } else {
-                                typo().bodySmall.greyScale()
-                            },
+                            typo().bodySmall.copy(
+                                color = if (isSelected) activeTint else inactiveTint,
+                            ),
                     )
                 },
                 selected = isSelected,
