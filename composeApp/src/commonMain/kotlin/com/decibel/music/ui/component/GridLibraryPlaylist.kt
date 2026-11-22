@@ -58,7 +58,6 @@ import com.decibel.music.ui.navigation.destination.list.AlbumDestination
 import com.decibel.music.ui.navigation.destination.list.LocalPlaylistDestination
 import com.decibel.music.ui.navigation.destination.list.PlaylistDestination
 import com.decibel.music.ui.navigation.destination.list.PodcastDestination
-import com.decibel.music.ui.theme.seed
 import com.decibel.music.ui.theme.typo
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -142,8 +141,8 @@ internal inline fun <reified T> GridLibraryPlaylist(
                                             .angledGradientBackground(
                                                 colors =
                                                     listOf(
-                                                        seed,
-                                                        Color.White.copy(alpha = 0.8f),
+                                                        Color(0xFF292929),
+                                                        Color(0xFF111111),
                                                     ),
                                                 degrees = 45f,
                                             ),
