@@ -3,6 +3,7 @@ package com.decibel.music.ui.component
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -15,7 +16,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.window.DialogProperties
-import com.decibel.music.ui.theme.seed
 import com.decibel.music.ui.theme.typo
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -74,7 +74,7 @@ fun ReviewDialog(
                     withLink(
                         LinkAnnotation.Url(
                             "https://decibel.app",
-                            TextLinkStyles(style = SpanStyle(textDecoration = TextDecoration.Underline, color = seed)),
+                            TextLinkStyles(style = SpanStyle(textDecoration = TextDecoration.Underline, color = MaterialTheme.colorScheme.primary)),
                         ) {
                             onDoneReview.invoke()
                             onDismissRequest.invoke()
@@ -88,7 +88,7 @@ fun ReviewDialog(
                     withLink(
                         LinkAnnotation.Url(
                             "https://decibel.app",
-                            TextLinkStyles(style = SpanStyle(textDecoration = TextDecoration.Underline, color = seed)),
+                            TextLinkStyles(style = SpanStyle(textDecoration = TextDecoration.Underline, color = MaterialTheme.colorScheme.primary)),
                         ) {
                             onDoneReview.invoke()
                             onDismissRequest.invoke()
