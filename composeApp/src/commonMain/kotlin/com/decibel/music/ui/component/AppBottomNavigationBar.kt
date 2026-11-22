@@ -6,7 +6,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,6 +45,26 @@ fun AppBottomNavigationBar(
             BottomNavScreen.Search,
             BottomNavScreen.Library,
         )
+    val routeSelectedIndex =
+        bottomNavScreens.firstOrNull { screen ->
+            currentBackStackEntry?.destination?.hierarchy?.any {
+                it.hasRoute(screen.destination::class)
+            } == true
+        }?.ordinal
+    var lastSelectedIndex by rememberSaveable {
+        mutableIntStateOf(
+            when (startDestination) {
+                is HomeDestination -> BottomNavScreen.Home.ordinal
+                is SearchDestination -> BottomNavScreen.Search.ordinal
+                is LibraryDestination -> BottomNavScreen.Library.ordinal
+                else -> BottomNavScreen.Home.ordinal
+            },
+        )
+    }
+    LaunchedEffect(routeSelectedIndex) {
+        if (routeSelectedIndex != null) lastSelectedIndex = routeSelectedIndex
+    }
+    val selectedIndex = routeSelectedIndex ?: lastSelectedIndex
 
     Box(
         modifier =
@@ -78,6 +102,7 @@ fun AppBottomNavigationBar(
                         if (routeIsCurrent) {
                             reloadDestinationIfNeeded(screen.destination::class)
                         } else {
+                            lastSelectedIndex = screen.ordinal
                             navController.navigate(screen.destination) {
                                 popUpTo(navController.graph.startDestinationId) {
                                     saveState = true
@@ -130,6 +155,26 @@ fun AppNavigationRail(
             BottomNavScreen.Search,
             BottomNavScreen.Library,
         )
+    val routeSelectedIndex =
+        bottomNavScreens.firstOrNull { screen ->
+            currentBackStackEntry?.destination?.hierarchy?.any {
+                it.hasRoute(screen.destination::class)
+            } == true
+        }?.ordinal
+    var lastSelectedIndex by rememberSaveable {
+        mutableIntStateOf(
+            when (startDestination) {
+                is HomeDestination -> BottomNavScreen.Home.ordinal
+                is SearchDestination -> BottomNavScreen.Search.ordinal
+                is LibraryDestination -> BottomNavScreen.Library.ordinal
+                else -> BottomNavScreen.Home.ordinal
+            },
+        )
+    }
+    LaunchedEffect(routeSelectedIndex) {
+        if (routeSelectedIndex != null) lastSelectedIndex = routeSelectedIndex
+    }
+    val selectedIndex = routeSelectedIndex ?: lastSelectedIndex
     NavigationRail {
         Spacer(Modifier.height(16.dp))
         Box(Modifier.padding(horizontal = 16.dp)) {
@@ -178,6 +223,7 @@ fun AppNavigationRail(
                     if (routeIsCurrent) {
                         reloadDestinationIfNeeded(screen.destination::class)
                     } else {
+                        lastSelectedIndex = screen.ordinal
                         navController.navigate(screen.destination) {
                             popUpTo(navController.graph.startDestinationId) {
                                 saveState = true
