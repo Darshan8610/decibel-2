@@ -140,11 +140,14 @@ fun AppTheme(
         } else {
             null
         }
+    // The flagship identity stays monochrome in both themes: white accent on OLED
+    // black, charcoal accent on white. Custom and wallpaper themes keep their own colours.
+    val defaultSeedColor = if (isDark) seed else Color(0xFF171717)
     val seedColor =
         if (themeColorSource == DataStoreManager.THEME_COLOR_CUSTOM) {
-            customThemeColor ?: seed
+            customThemeColor ?: defaultSeedColor
         } else {
-            seed
+            defaultSeedColor
         }
     // Symmetric base: dark pins background/surface to pure black (#000000) for AMOLED; light pins them to
     // pure white with a neutral-grey ramp (the seed otherwise tints the light neutrals warm/cream).
