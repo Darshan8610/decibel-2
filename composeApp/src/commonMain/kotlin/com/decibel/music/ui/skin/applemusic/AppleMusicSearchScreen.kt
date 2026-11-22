@@ -14,68 +14,63 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
+import coil3.compose.AsyncImage
 import com.decibel.music.common.Config
-import com.decibel.music.domain.data.model.searchResult.songs.SongsResult
 import com.decibel.music.domain.mediaservice.handler.PlaylistType
 import com.decibel.music.domain.mediaservice.handler.QueueData
 import com.decibel.music.domain.utils.toTrack
 import com.decibel.music.ui.component.SongFullWidthItems
-import com.decibel.music.viewModel.SearchScreenUIState
-import com.decibel.music.viewModel.SearchViewModel
-import com.decibel.music.viewModel.SharedViewModel
-import org.koin.compose.koinInject
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import coil3.compose.AsyncImage
-import com.decibel.music.ui.icon.Search
 import com.decibel.music.ui.icon.DecibelIcons
 import com.decibel.music.ui.navigation.destination.home.MoodDestination
 import com.decibel.music.ui.skin.AppleMusicPink
 import com.decibel.music.ui.skin.AppleMusicSurfaceDark
+import com.decibel.music.ui.skin.AppleMusicSurfaceElevatedDark
 import com.decibel.music.ui.skin.AppleMusicTextSecondaryDark
 import com.decibel.music.ui.theme.typo
+import com.decibel.music.viewModel.SearchScreenUIState
+import com.decibel.music.viewModel.SearchViewModel
+import com.decibel.music.viewModel.SharedViewModel
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-
-data class AppleMusicCategory(
-    val title: String,
-    val imageUrl: String,
-    val params: String = "",
-)
 
 @Composable
 fun AppleMusicSearchScreen(
@@ -84,41 +79,39 @@ fun AppleMusicSearchScreen(
 ) {
     val searchState by searchViewModel.searchScreenState.collectAsStateWithLifecycle()
     val searchUiState by searchViewModel.searchScreenUIState.collectAsStateWithLifecycle()
+    val moodAndGenres by searchViewModel.moodAndGenres.collectAsStateWithLifecycle()
+    val moodArtwork by searchViewModel.moodArtwork.collectAsStateWithLifecycle()
     val sharedViewModel: SharedViewModel = koinInject()
+
     var searchText by rememberSaveable { mutableStateOf("") }
+    var submittedQuery by rememberSaveable { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
 
     fun submitSearch(query: String) {
         val cleanQuery = query.trim()
         if (cleanQuery.isEmpty()) return
+
+        submittedQuery = cleanQuery
+        searchText = cleanQuery
         searchViewModel.insertSearchHistory(cleanQuery)
         searchViewModel.searchSongs(cleanQuery)
         focusManager.clearFocus()
     }
 
-    val categories = listOf(
-        AppleMusicCategory("Spatial Audio", "https://picsum.photos/400/250?random=11", "ggMPOg1uX1BvcA%3D%3D"),
-        AppleMusicCategory("Hits", "https://picsum.photos/400/250?random=12", "ggMPOg1uX0NoYXJ0cw%3D%3D"),
-        AppleMusicCategory("Pop", "https://picsum.photos/400/250?random=13", "ggMPOg1uX1BvcA%3D%3D"),
-        AppleMusicCategory("Hip-Hop / R&B", "https://picsum.photos/400/250?random=14", "ggMPOg1uX0hpcC1Ib3A%3D"),
-        AppleMusicCategory("Dance & Electronic", "https://picsum.photos/400/250?random=15", "ggMPOg1uX1BhcnR5"),
-        AppleMusicCategory("Chill", "https://picsum.photos/400/250?random=16", "ggMPOg1uX0NoaWxs"),
-        AppleMusicCategory("Rock", "https://picsum.photos/400/250?random=17", "ggMPOg1uX1JvY2s%3D"),
-        AppleMusicCategory("Workout", "https://picsum.photos/400/250?random=18", "ggMPOg1uX1dvcmtvdXQ%3D"),
-        AppleMusicCategory("Wellness", "https://picsum.photos/400/250?random=19", "ggMPOg1uX0ZvY3Vz"),
-        AppleMusicCategory("Classical", "https://picsum.photos/400/250?random=20", "ggMPOg1uX1NsZWVw"),
-    )
-
     LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
+        columns = GridCells.Adaptive(minSize = 132.dp),
         modifier = Modifier.fillMaxSize().background(Color.Black),
         contentPadding = PaddingValues(horizontal = 20.dp, vertical = 24.dp),
         horizontalArrangement = Arrangement.spacedBy(14.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        item(span = { GridItemSpan(2) }) {
-            Column(modifier = Modifier.fillMaxWidth().padding(top = 20.dp, bottom = 12.dp)) {
+        item(span = { GridItemSpan(maxLineSpan) }) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 20.dp, bottom = 12.dp),
+            ) {
                 Text(
                     text = "Search",
                     style = typo().headlineLarge.copy(
@@ -130,21 +123,28 @@ fun AppleMusicSearchScreen(
                 )
 
                 Card(
-                    modifier = Modifier.fillMaxWidth().height(44.dp),
-                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier.fillMaxWidth().height(48.dp),
+                    shape = RoundedCornerShape(12.dp),
                     colors = CardDefaults.cardColors(containerColor = AppleMusicSurfaceDark),
                 ) {
                     Row(
-                        modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp),
+                        modifier = Modifier.fillMaxSize().padding(horizontal = 14.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Icon(DecibelIcons.Search, contentDescription = "Search", tint = AppleMusicTextSecondaryDark, modifier = Modifier.size(18.dp))
-                        Spacer(modifier = Modifier.size(8.dp))
+                        Icon(
+                            imageVector = DecibelIcons.Search,
+                            contentDescription = "Search",
+                            tint = AppleMusicTextSecondaryDark,
+                            modifier = Modifier.size(19.dp),
+                        )
+                        Spacer(modifier = Modifier.size(10.dp))
                         BasicTextField(
                             value = searchText,
-                            onValueChange = {
-                                searchText = it
-                                if (it.isNotBlank()) searchViewModel.suggestQuery(it)
+                            onValueChange = { value ->
+                                searchText = value
+                                if (submittedQuery.isNotBlank() && value.trim() != submittedQuery) {
+                                    submittedQuery = ""
+                                }
                             },
                             modifier = Modifier.weight(1f).focusRequester(focusRequester),
                             singleLine = true,
@@ -154,15 +154,27 @@ fun AppleMusicSearchScreen(
                             decorationBox = { innerTextField ->
                                 Box {
                                     if (searchText.isEmpty()) {
-                                        Text("Artists, Songs, Lyrics, and More", style = typo().bodyMedium.copy(color = AppleMusicTextSecondaryDark, fontSize = 16.sp))
+                                        Text(
+                                            "Artists, songs, albums and more",
+                                            style = typo().bodyMedium.copy(
+                                                color = AppleMusicTextSecondaryDark,
+                                                fontSize = 15.sp,
+                                            ),
+                                        )
                                     }
                                     innerTextField()
                                 }
                             },
                         )
                         if (searchText.isNotEmpty()) {
-                            IconButton(onClick = { searchText = "" }) {
-                                Text("×", color = AppleMusicTextSecondaryDark, fontSize = 20.sp)
+                            IconButton(
+                                onClick = {
+                                    searchText = ""
+                                    submittedQuery = ""
+                                    focusManager.clearFocus()
+                                },
+                            ) {
+                                Text("×", color = AppleMusicTextSecondaryDark, fontSize = 22.sp)
                             }
                         }
                     }
@@ -170,107 +182,234 @@ fun AppleMusicSearchScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
                 Text(
-                    text = "Browse Categories",
+                    text = if (submittedQuery.isBlank()) "Browse Categories" else "Results",
                     style = typo().headlineSmall.copy(
                         fontWeight = FontWeight.Bold,
                         color = Color.White,
-                        fontSize = 20.sp,
+                        fontSize = 21.sp,
                     ),
                 )
-            }
-        }
-
-        if (searchText.isNotBlank() && searchUiState is SearchScreenUIState.Loading) {
-            item(span = { GridItemSpan(2) }) {
-                Text("Searching…", color = Color.White, modifier = Modifier.padding(16.dp))
-            }
-        }
-        if (searchText.isNotBlank() && searchUiState is SearchScreenUIState.Success) {
-            item(span = { GridItemSpan(2) }) {
-                LazyColumn(modifier = Modifier.fillMaxWidth().height(520.dp)) {
-                    items(searchState.searchSongsResult, key = { it.videoId }) { song ->
-                        val track = song.toTrack()
-                        SongFullWidthItems(
-                            track = track,
-                            isPlaying = false,
-                            onClickListener = {
-                                searchViewModel.setQueueData(
-                                    QueueData.Data(
-                                        listTracks = arrayListOf(track),
-                                        firstPlayedTrack = track,
-                                        playlistId = "RDAMVM${track.videoId}",
-                                        playlistName = searchText,
-                                        playlistType = PlaylistType.RADIO,
-                                        continuation = null,
-                                    ),
-                                )
-                                searchViewModel.loadMediaItem(track, type = Config.SONG_CLICK)
-                            },
-                            onAddToQueue = { sharedViewModel.addListToQueue(arrayListOf(track)) },
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                    }
+                if (submittedQuery.isNotBlank()) {
+                    Text(
+                        text = "For \"" + submittedQuery + "\"",
+                        style = typo().bodyMedium.copy(color = AppleMusicTextSecondaryDark),
+                        modifier = Modifier.padding(top = 4.dp),
+                    )
                 }
             }
         }
 
-        // 2-Column Category Grid (Apple Music: square tiles with dark gradient + bold label)
-        items(categories, key = { it.title }) { category ->
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .clip(RoundedCornerShape(10.dp))
-                    .clickable {
-                        navController.navigate(MoodDestination(params = category.params))
-                    },
-                shape = RoundedCornerShape(10.dp),
-            ) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    AsyncImage(
-                        model = category.imageUrl,
-                        contentDescription = category.title,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize(),
-                    )
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                Brush.verticalGradient(
-                                    listOf(Color(0x22000000), Color(0x99000000), Color(0xE6000000))
-                                )
+        if (submittedQuery.isNotBlank()) {
+            when (searchUiState) {
+                SearchScreenUIState.Loading -> {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            CircularProgressIndicator(
+                                color = AppleMusicPink,
+                                strokeWidth = 2.dp,
+                                modifier = Modifier.size(22.dp),
                             )
-                    )
-                    Column(
-                        modifier = Modifier
-                            .align(Alignment.BottomStart)
-                            .padding(12.dp),
-                    ) {
-                        Text(
-                            text = category.title,
-                            style = typo().titleMedium.copy(
-                                fontWeight = FontWeight.Bold,
+                            Spacer(modifier = Modifier.size(12.dp))
+                            Text("Searching", color = AppleMusicTextSecondaryDark)
+                        }
+                    }
+                }
+
+                SearchScreenUIState.Error -> {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        Column(
+                            modifier = Modifier.fillMaxWidth().padding(vertical = 28.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            Text(
+                                "Couldn't load these results",
                                 color = Color.White,
-                                fontSize = 16.sp,
-                            ),
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                        Text(
-                            text = "Category",
-                            style = typo().bodySmall.copy(
+                                style = typo().titleMedium,
+                            )
+                            Text(
+                                "Check your connection and try again.",
                                 color = AppleMusicTextSecondaryDark,
-                                fontSize = 12.sp,
+                                modifier = Modifier.padding(top = 6.dp),
+                            )
+                            TextButton(onClick = { searchViewModel.searchSongs(submittedQuery) }) {
+                                Text("Try again", color = AppleMusicPink)
+                            }
+                        }
+                    }
+                }
+
+                SearchScreenUIState.Success -> {
+                    if (searchState.searchSongsResult.isEmpty()) {
+                        item(span = { GridItemSpan(maxLineSpan) }) {
+                            Text(
+                                "No songs found for \"" + submittedQuery + "\".",
+                                color = AppleMusicTextSecondaryDark,
+                                modifier = Modifier.padding(vertical = 28.dp),
+                            )
+                        }
+                    } else {
+                        items(
+                            items = searchState.searchSongsResult,
+                            key = { it.videoId },
+                            span = { GridItemSpan(maxLineSpan) },
+                        ) { song ->
+                            val track = song.toTrack()
+                            SongFullWidthItems(
+                                track = track,
+                                isPlaying = false,
+                                onClickListener = {
+                                    searchViewModel.setQueueData(
+                                        QueueData.Data(
+                                            listTracks = arrayListOf(track),
+                                            firstPlayedTrack = track,
+                                            playlistId = "RDAMVM" + track.videoId,
+                                            playlistName = submittedQuery,
+                                            playlistType = PlaylistType.RADIO,
+                                            continuation = null,
+                                        ),
+                                    )
+                                    searchViewModel.loadMediaItem(track, type = Config.SONG_CLICK)
+                                },
+                                onAddToQueue = { sharedViewModel.addListToQueue(arrayListOf(track)) },
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                        }
+                    }
+                }
+
+                SearchScreenUIState.Empty -> {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        Text(
+                            "Search for a song to see results here.",
+                            color = AppleMusicTextSecondaryDark,
+                            modifier = Modifier.padding(vertical = 28.dp),
+                        )
+                    }
+                }
+            }
+        } else {
+            val mood = moodAndGenres
+            if (mood == null) {
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 36.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        CircularProgressIndicator(
+                            color = AppleMusicPink,
+                            strokeWidth = 2.dp,
+                            modifier = Modifier.size(22.dp),
+                        )
+                        Spacer(modifier = Modifier.size(12.dp))
+                        Text("Loading categories", color = AppleMusicTextSecondaryDark)
+                    }
+                }
+            } else {
+                mood.sections.forEach { section ->
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        Text(
+                            text = section.title,
+                            style = typo().titleMedium.copy(
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 19.sp,
                             ),
+                            modifier = Modifier.padding(top = 8.dp, bottom = 2.dp),
+                        )
+                    }
+                    items(
+                        items = section.items,
+                        key = { section.title + "/" + it.params },
+                    ) { category ->
+                        LaunchedEffect(category.params) {
+                            searchViewModel.loadMoodArtwork(category.params)
+                        }
+                        AppleMusicCategoryCard(
+                            title = category.title,
+                            artworkUrl = moodArtwork[category.params],
+                            onClick = {
+                                navController.navigate(MoodDestination(params = category.params))
+                            },
                         )
                     }
                 }
             }
         }
 
-        item(span = { GridItemSpan(2) }) {
-            Spacer(modifier = Modifier.height(80.dp))
+        item(span = { GridItemSpan(maxLineSpan) }) {
+            Spacer(modifier = Modifier.height(72.dp))
         }
+    }
+}
+
+@Composable
+private fun AppleMusicCategoryCard(
+    title: String,
+    artworkUrl: String?,
+    onClick: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .aspectRatio(1.12f)
+            .clip(RoundedCornerShape(14.dp))
+            .background(
+                Brush.linearGradient(
+                    listOf(
+                        AppleMusicPink.copy(alpha = 0.24f),
+                        AppleMusicSurfaceElevatedDark,
+                        AppleMusicSurfaceDark,
+                    ),
+                ),
+            )
+            .clickable(onClick = onClick),
+    ) {
+        if (!artworkUrl.isNullOrBlank()) {
+            AsyncImage(
+                model = artworkUrl,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        listOf(
+                            Color(0x08000000),
+                            Color(0x22000000),
+                            Color(0xE6000000),
+                        ),
+                    ),
+                ),
+        )
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(12.dp)
+                .size(7.dp)
+                .clip(CircleShape)
+                .background(AppleMusicPink.copy(alpha = 0.9f)),
+        )
+        Text(
+            text = title,
+            style = typo().titleMedium.copy(
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                fontSize = 17.sp,
+            ),
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(14.dp),
+        )
     }
 }
