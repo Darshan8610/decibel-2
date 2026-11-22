@@ -7,9 +7,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,16 +41,7 @@ fun AppBottomNavigationBar(
             BottomNavScreen.Search,
             BottomNavScreen.Library,
         )
-    var selectedIndex by rememberSaveable {
-        mutableIntStateOf(
-            when (startDestination) {
-                is HomeDestination -> BottomNavScreen.Home.ordinal
-                is SearchDestination -> BottomNavScreen.Search.ordinal
-                is LibraryDestination -> BottomNavScreen.Library.ordinal
-                else -> BottomNavScreen.Home.ordinal // Default to Home if not recognized
-            },
-        )
-    }
+
     Box(
         modifier =
             Modifier
@@ -76,22 +64,20 @@ fun AppBottomNavigationBar(
                 },
         ) {
             bottomNavScreens.forEach { screen ->
+                val routeIsCurrent =
+                    currentBackStackEntry?.destination?.hierarchy?.any {
+                        it.hasRoute(screen.destination::class)
+                    } == true
+                val isSelected =
+                    routeIsCurrent ||
+                        (currentBackStackEntry == null && screen.destination::class == startDestination::class)
+
                 NavigationBarItem(
-                    selected = selectedIndex == screen.ordinal,
+                    selected = isSelected,
                     onClick = {
-                        if (selectedIndex == screen.ordinal) {
-                            if (currentBackStackEntry?.destination?.hierarchy?.any {
-                                    it.hasRoute(screen.destination::class)
-                                } == true
-                            ) {
-                                reloadDestinationIfNeeded(
-                                    screen.destination::class,
-                                )
-                            } else {
-                                navController.navigate(screen.destination)
-                            }
+                        if (routeIsCurrent) {
+                            reloadDestinationIfNeeded(screen.destination::class)
                         } else {
-                            selectedIndex = screen.ordinal
                             navController.navigate(screen.destination) {
                                 popUpTo(navController.graph.startDestinationId) {
                                     saveState = true
@@ -105,7 +91,7 @@ fun AppBottomNavigationBar(
                         Text(
                             stringResource(screen.title),
                             style =
-                                if (selectedIndex == screen.ordinal) {
+                                if (isSelected) {
                                     typo().bodySmall
                                 } else {
                                     typo().bodySmall.greyScale()
@@ -144,16 +130,6 @@ fun AppNavigationRail(
             BottomNavScreen.Search,
             BottomNavScreen.Library,
         )
-    var selectedIndex by rememberSaveable {
-        mutableIntStateOf(
-            when (startDestination) {
-                is HomeDestination -> BottomNavScreen.Home.ordinal
-                is SearchDestination -> BottomNavScreen.Search.ordinal
-                is LibraryDestination -> BottomNavScreen.Library.ordinal
-                else -> BottomNavScreen.Home.ordinal // Default to Home if not recognized
-            },
-        )
-    }
     NavigationRail {
         Spacer(Modifier.height(16.dp))
         Box(Modifier.padding(horizontal = 16.dp)) {
@@ -175,35 +151,33 @@ fun AppNavigationRail(
             }
         }
         Spacer(Modifier.weight(1f))
-        bottomNavScreens.forEachIndexed { index, screen ->
+        bottomNavScreens.forEach { screen ->
+            val routeIsCurrent =
+                currentBackStackEntry?.destination?.hierarchy?.any {
+                    it.hasRoute(screen.destination::class)
+                } == true
+            val isSelected =
+                routeIsCurrent ||
+                    (currentBackStackEntry == null && screen.destination::class == startDestination::class)
+
             NavigationRailItem(
                 icon = screen.icon,
                 label = {
                     Text(
                         stringResource(screen.title),
                         style =
-                            if (selectedIndex == screen.ordinal) {
+                            if (isSelected) {
                                 typo().bodySmall
                             } else {
                                 typo().bodySmall.greyScale()
                             },
                     )
                 },
-                selected = selectedIndex == index,
+                selected = isSelected,
                 onClick = {
-                    if (selectedIndex == screen.ordinal) {
-                        if (currentBackStackEntry?.destination?.hierarchy?.any {
-                                it.hasRoute(screen.destination::class)
-                            } == true
-                        ) {
-                            reloadDestinationIfNeeded(
-                                screen.destination::class,
-                            )
-                        } else {
-                            navController.navigate(screen.destination)
-                        }
+                    if (routeIsCurrent) {
+                        reloadDestinationIfNeeded(screen.destination::class)
                     } else {
-                        selectedIndex = screen.ordinal
                         navController.navigate(screen.destination) {
                             popUpTo(navController.graph.startDestinationId) {
                                 saveState = true
