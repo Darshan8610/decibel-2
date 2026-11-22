@@ -35,6 +35,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -317,7 +318,7 @@ fun MediumMiniLayout(
                                     contentDescription = "Like",
                                     tint =
                                         if (controllerState.isLiked) {
-                                            Color(0xFFFF4081)
+                                            MaterialTheme.colorScheme.primary
                                         } else {
                                             Color.White.copy(alpha = 0.7f)
                                         },
@@ -621,7 +622,7 @@ fun SquareMiniLayout(
                         contentDescription = "Like",
                         tint =
                             if (controllerState.isLiked) {
-                                Color(0xFFFF4081)
+                                MaterialTheme.colorScheme.primary
                             } else {
                                 Color.White.copy(alpha = 0.7f)
                             },
@@ -819,7 +820,7 @@ fun ExpandedMiniLayout(
                                 contentDescription = "Like",
                                 tint =
                                     if (controllerState.isLiked) {
-                                        Color(0xFFFF4081)
+                                        MaterialTheme.colorScheme.primary
                                     } else {
                                         Color.White.copy(alpha = 0.7f)
                                     },
