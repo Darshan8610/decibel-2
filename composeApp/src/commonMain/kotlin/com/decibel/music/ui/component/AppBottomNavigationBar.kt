@@ -93,9 +93,7 @@ fun AppBottomNavigationBar(
                     currentBackStackEntry?.destination?.hierarchy?.any {
                         it.hasRoute(screen.destination::class)
                     } == true
-                val isSelected =
-                    routeIsCurrent ||
-                        (currentBackStackEntry == null && screen.destination::class == startDestination::class)
+                val isSelected = selectedIndex == screen.ordinal
 
                 NavigationBarItem(
                     selected = isSelected,
@@ -202,9 +200,7 @@ fun AppNavigationRail(
                 currentBackStackEntry?.destination?.hierarchy?.any {
                     it.hasRoute(screen.destination::class)
                 } == true
-            val isSelected =
-                routeIsCurrent ||
-                    (currentBackStackEntry == null && screen.destination::class == startDestination::class)
+            val isSelected = selectedIndex == screen.ordinal
 
             NavigationRailItem(
                 icon = screen.icon,
