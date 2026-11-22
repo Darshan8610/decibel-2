@@ -65,7 +65,6 @@ import com.decibel.music.logger.Logger
 import com.decibel.music.MainActivity
 import com.decibel.music.R
 import com.decibel.music.extension.getColorFromPalette
-import com.decibel.music.ui.theme.seed
 import com.decibel.music.viewModel.SharedViewModel
 import com.decibel.music.viewModel.UIEvent
 import kotlinx.coroutines.CoroutineScope
@@ -272,7 +271,7 @@ class MainAppWidget :
                                             .size(32.dp),
                                     imageProvider = ImageProvider(R.drawable.baseline_shuffle_24),
                                     contentDescription = "Shuffle",
-                                    contentColor = if (controllerState.isShuffle) ColorProvider(seed) else ColorProvider(Color.White),
+                                    contentColor = if (controllerState.isShuffle) ColorProvider(Color.White) else ColorProvider(Color.White),
                                     backgroundColor = ColorProvider(Color.Transparent),
                                     onClick = {
                                         sharedViewModel.onUIEvent(UIEvent.Shuffle)
@@ -340,7 +339,7 @@ class MainAppWidget :
                                         if (controllerState.repeatState is RepeatState.None) {
                                             ColorProvider(Color.White)
                                         } else {
-                                            ColorProvider(seed)
+                                            ColorProvider(Color.White)
                                         },
                                     backgroundColor = ColorProvider(Color.Transparent),
                                     onClick = {
