@@ -130,16 +130,20 @@ actual fun LiquidGlassAppBottomNavigationBar(
             BottomNavScreen.Home,
             BottomNavScreen.Library,
         )
-    var selectedIndex by rememberSaveable {
-        mutableIntStateOf(
-            when (startDestination) {
+    // Derive the selected tab from the live back stack so deep links, back presses,
+    // and navigation initiated outside this bar cannot leave the glass bar stale.
+    val selectedIndex =
+        bottomNavScreens.firstOrNull { screen ->
+            currentBackStackEntry?.destination?.hierarchy?.any {
+                it.hasRoute(screen.destination::class)
+            } == true
+        }?.ordinal
+            ?: when (startDestination) {
                 is HomeDestination -> BottomNavScreen.Home.ordinal
                 is SearchDestination -> BottomNavScreen.Search.ordinal
                 is LibraryDestination -> BottomNavScreen.Library.ordinal
-                else -> BottomNavScreen.Home.ordinal // Default to Home if not recognized
-            },
-        )
-    }
+                else -> BottomNavScreen.Home.ordinal
+            }
     var isExpanded by rememberSaveable {
         mutableStateOf(true)
     }
@@ -195,17 +199,13 @@ actual fun LiquidGlassAppBottomNavigationBar(
     fun selectTab(index: Int) {
         com.decibel.music.utils.DecibelHaptics.performStrongClick()
         val screen = bottomNavScreens.find { it.ordinal == index } ?: return
-        if (selectedIndex == index) {
-            if (currentBackStackEntry?.destination?.hierarchy?.any {
-                    it.hasRoute(screen.destination::class)
-                } == true
-            ) {
-                reloadDestinationIfNeeded(screen.destination::class)
-            } else {
-                navController.navigate(screen.destination)
-            }
+        val routeIsCurrent =
+            currentBackStackEntry?.destination?.hierarchy?.any {
+                it.hasRoute(screen.destination::class)
+            } == true
+        if (routeIsCurrent) {
+            reloadDestinationIfNeeded(screen.destination::class)
         } else {
-            selectedIndex = index
             navController.navigate(screen.destination) {
                 popUpTo(navController.graph.startDestinationId) {
                     saveState = true
