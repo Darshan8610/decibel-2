@@ -52,6 +52,7 @@ import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -148,7 +149,6 @@ import com.decibel.music.ui.icon.DecibelIcons
 import com.decibel.music.ui.icon.Sort
 import com.decibel.music.ui.icon.TipsAndUpdates
 import com.decibel.music.ui.theme.LocalIsDarkTheme
-import com.decibel.music.ui.theme.seed
 import com.decibel.music.ui.theme.typo
 import com.decibel.music.viewModel.LocalPlaylistUIEvent
 import com.decibel.music.viewModel.LocalPlaylistViewModel
@@ -961,7 +961,7 @@ fun LocalPlaylistScreen(
                                                 RippleIconButton(
                                                     imageVector = DecibelIcons.PauseCircle,
                                                     fillMaxSize = true,
-                                                    tint = seed,
+                                                    tint = MaterialTheme.colorScheme.primary,
                                                     modifier = Modifier.size(48.dp),
                                                 ) {
                                                     sharedViewModel.onUIEvent(UIEvent.PlayPause)
@@ -970,7 +970,7 @@ fun LocalPlaylistScreen(
                                                 RippleIconButton(
                                                     imageVector = DecibelIcons.PlayCircle,
                                                     fillMaxSize = true,
-                                                    tint = seed,
+                                                    tint = MaterialTheme.colorScheme.primary,
                                                     modifier = Modifier.size(48.dp),
                                                 ) {
                                                     viewModel.onUIEvent(LocalPlaylistUIEvent.PlayClick)
