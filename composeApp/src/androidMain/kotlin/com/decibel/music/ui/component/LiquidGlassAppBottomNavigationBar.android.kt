@@ -132,18 +132,26 @@ actual fun LiquidGlassAppBottomNavigationBar(
         )
     // Derive the selected tab from the live back stack so deep links, back presses,
     // and navigation initiated outside this bar cannot leave the glass bar stale.
-    val selectedIndex =
+    val routeSelectedIndex =
         bottomNavScreens.firstOrNull { screen ->
             currentBackStackEntry?.destination?.hierarchy?.any {
                 it.hasRoute(screen.destination::class)
             } == true
         }?.ordinal
-            ?: when (startDestination) {
+    var lastSelectedIndex by rememberSaveable {
+        mutableIntStateOf(
+            when (startDestination) {
                 is HomeDestination -> BottomNavScreen.Home.ordinal
                 is SearchDestination -> BottomNavScreen.Search.ordinal
                 is LibraryDestination -> BottomNavScreen.Library.ordinal
                 else -> BottomNavScreen.Home.ordinal
-            }
+            },
+        )
+    }
+    LaunchedEffect(routeSelectedIndex) {
+        if (routeSelectedIndex != null) lastSelectedIndex = routeSelectedIndex
+    }
+    val selectedIndex = routeSelectedIndex ?: lastSelectedIndex
     var isExpanded by rememberSaveable {
         mutableStateOf(true)
     }
@@ -206,6 +214,7 @@ actual fun LiquidGlassAppBottomNavigationBar(
         if (routeIsCurrent) {
             reloadDestinationIfNeeded(screen.destination::class)
         } else {
+            lastSelectedIndex = index
             navController.navigate(screen.destination) {
                 popUpTo(navController.graph.startDestinationId) {
                     saveState = true
