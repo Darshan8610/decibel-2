@@ -28,11 +28,11 @@ object DecibelOriginalsSkinProvider : SkinUiProvider {
     override val skin: AppSkin = AppSkin.DECIBEL_ORIGINALS
     override val tokens: SkinTokens = SkinTokens(
         backgroundDark = 0xFF000000,
-        surfaceDark = 0xFF121212,
-        elevatedSurfaceDark = 0xFF1E1E1E,
-        accent = 0xFFFF4081,
+        surfaceDark = 0xFF080808,
+        elevatedSurfaceDark = 0xFF121212,
+        accent = 0xFFFFFFFF,
         textPrimary = 0xFFFFFFFF,
-        textSecondary = 0xFFB0B0B0,
+        textSecondary = 0xFFB3B3B3,
         cornerRadiusLarge = 16,
         cornerRadiusMedium = 12,
         cornerRadiusSmall = 8,
