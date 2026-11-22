@@ -9,12 +9,10 @@ import java.net.URI
 import java.security.MessageDigest
 import java.util.Properties
 
+// Read the Gradle project property from gradle.properties (or -PisFullBuild=...).
+// ExtraPropertiesExtension does not expose gradle.properties project properties.
 val isFullBuild: Boolean =
-    try {
-        extra["isFullBuild"] == "true"
-    } catch (e: Exception) {
-        false
-    }
+    providers.gradleProperty("isFullBuild").orNull?.toBooleanStrictOrNull() ?: false
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
